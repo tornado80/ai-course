@@ -1,5 +1,4 @@
 from enum import Enum
-from math import sqrt
 from copy import deepcopy
 from prettytable import PrettyTable
 from typing import List
@@ -72,12 +71,7 @@ class State:
 
 
 class Node:
-    def __init__(self,
-                 state: State,
-                 g_cost: int,
-                 h_cost: int,
-                 parent,
-                 action: Action):
+    def __init__(self, state: State, g_cost: int, h_cost: int, parent, action: Action):
         self.parent = parent
         self.state: State = state
         self.f_cost: int = g_cost + h_cost
@@ -91,11 +85,7 @@ class Node:
 
 
 class Puzzle:
-    def __init__(self,
-                 n: int,
-                 initial_state_matrix: List[List],
-                 goal_state_matrix: List[List]):
-        self.__dimension = int(sqrt(n + 1))
+    def __init__(self, initial_state_matrix: List[List], goal_state_matrix: List[List]):
         self.__initial_state = State(initial_state_matrix)
         self.__goal_state = State(goal_state_matrix)
         self.__goal_state_cells_positions = {
@@ -243,7 +233,6 @@ if __name__ == "__main__":
     """
 
     solution = Puzzle(
-        8,
         [
             [5, 6, 7],
             [4, None, 8],
