@@ -134,6 +134,25 @@ class Puzzle:
     def solve(self) -> List[Node] | None:
         frontier = AdaptableHeapPriorityQueue()
         explored = set()
+        frontier_nodes_by_states = {}
+        frontier_locators_by_nodes = {}
+
+        def add_to_frontier_finders(locator, node: Node):
+            frontier_nodes_by_states[node.state] = node
+            frontier_locators_by_nodes[node] = locator
+
+        def add_to_frontier(key: int, node: Node):
+            locator = frontier.add(key, node)
+            add_to_frontier_finders(locator, node)
+
+        def remove_from_frontier_finders(node: Node):
+            del frontier_nodes_by_states[node.state]
+            del frontier_locators_by_nodes[node]
+
+        def update_frontier(locator, key: int, node: Node):
+            frontier.update(locator, key, node)
+            add_to_frontier_finders(locator, node)
+
         initial_node = Node(
             self.__initial_state,
             0,
@@ -141,31 +160,24 @@ class Puzzle:
             None,
             None
         )
-        frontier_nodes_by_states = {self.__initial_state: initial_node}
-        frontier_locators_by_nodes = {
-            initial_node: frontier.add(initial_node.f_cost, initial_node)
-        }
+
+        add_to_frontier(initial_node.f_cost, initial_node)
+
         while not frontier.is_empty():
             key, node = frontier.remove_min()
-            del frontier_nodes_by_states[node.state]
-            del frontier_locators_by_nodes[node]
+            remove_from_frontier_finders(node)
             if self.__is_goal_state(node.state):
                 return self.__solution(node)
             explored.add(node.state)
             for child in self.__children(node):
                 if child.state not in explored and child.state not in frontier_nodes_by_states:
-                    locator = frontier.add(child.f_cost, child)
-                    frontier_nodes_by_states[child.state] = child
-                    frontier_locators_by_nodes[child] = locator
+                    add_to_frontier(child.f_cost, child)
                 elif child.state in frontier_nodes_by_states:
                     suspect = frontier_nodes_by_states[child.state]
                     if suspect.f_cost > child.f_cost:
                         suspect_locator = frontier_locators_by_nodes[suspect]
-                        frontier.update(suspect_locator, child.f_cost, child)
-                        del frontier_nodes_by_states[suspect.state]
-                        del frontier_locators_by_nodes[suspect]
-                        frontier_nodes_by_states[child.state] = child
-                        frontier_locators_by_nodes[child] = suspect_locator
+                        remove_from_frontier_finders(suspect)
+                        update_frontier(suspect_locator, child.f_cost, child)
         return None
 
     def __recursively_find_solution(self, node: Node) -> List[Node]:
@@ -195,7 +207,7 @@ if __name__ == "__main__":
         ]
     ).solve()
     """
-
+    """
     solution = Puzzle(
         15,
         [
@@ -211,7 +223,7 @@ if __name__ == "__main__":
             [13, 14, 15, None]
         ]
     ).solve()
-
+    """
     """
     solution = Puzzle(
         15,
@@ -229,7 +241,7 @@ if __name__ == "__main__":
         ]
     ).solve()
     """
-    """
+
     solution = Puzzle(
         8,
         [
@@ -243,6 +255,6 @@ if __name__ == "__main__":
             [7, 6, 5]
         ]
     ).solve()
-    """
+
     for node in solution:
         node.pretty_print()
