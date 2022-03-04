@@ -71,7 +71,7 @@ class State:
 
 
 class Node:
-    def __init__(self, state: State, g_cost: int, h_cost: int, parent, action: Action):
+    def __init__(self, state: State, g_cost: int, h_cost: int, parent, action: Action | None):
         self.parent = parent
         self.state: State = state
         self.f_cost: int = g_cost + h_cost
@@ -131,21 +131,21 @@ class Puzzle:
             frontier_nodes_by_states[node.state] = node
             frontier_locators_by_nodes[node] = locator
 
-        def add_to_frontier(key: int, node: Node):
-            locator = frontier.add(key, node)
+        def add_to_frontier(f_cost: int, node: Node):
+            locator = frontier.add(f_cost, node)
             add_to_frontier_finders(locator, node)
 
         def remove_from_frontier_finders(node: Node):
             del frontier_nodes_by_states[node.state]
             del frontier_locators_by_nodes[node]
 
-        def update_frontier(locator, key: int, node: Node):
-            frontier.update(locator, key, node)
+        def update_frontier(locator, f_cost: int, node: Node):
+            frontier.update(locator, f_cost, node)
             add_to_frontier_finders(locator, node)
 
         initial_node = Node(
             self.__initial_state,
-            0,
+            0,  # initial g_cost is 0
             self.__heuristic(self.__initial_state),
             None,
             None
@@ -181,10 +181,8 @@ class Puzzle:
         return self.__recursively_find_solution(goal_node)
 
 
-if __name__ == "__main__":
-    """
-    solution = Puzzle(
-        8,
+def test1():
+    return Puzzle(
         [
             [7, 2, 4],
             [5, None, 6],
@@ -196,10 +194,10 @@ if __name__ == "__main__":
             [6, 7, 8]
         ]
     ).solve()
-    """
-    """
-    solution = Puzzle(
-        15,
+
+
+def test2():
+    return Puzzle(
         [
             [3, 9, 4, 8],
             [1, 5, 11, 6],
@@ -213,10 +211,10 @@ if __name__ == "__main__":
             [13, 14, 15, None]
         ]
     ).solve()
-    """
-    """
-    solution = Puzzle(
-        15,
+
+
+def test3():
+    return Puzzle(
         [
             [13, 6, 10, 9],
             [15, 7, 3, 5],
@@ -230,9 +228,10 @@ if __name__ == "__main__":
             [13, 14, 15, None]
         ]
     ).solve()
-    """
 
-    solution = Puzzle(
+
+def test4():
+    return Puzzle(
         [
             [5, 6, 7],
             [4, None, 8],
@@ -245,5 +244,8 @@ if __name__ == "__main__":
         ]
     ).solve()
 
-    for node in solution:
-        node.pretty_print()
+
+if __name__ == "__main__":
+    for solution in [test1(), test2()]:
+        for node in solution:
+            node.pretty_print()
