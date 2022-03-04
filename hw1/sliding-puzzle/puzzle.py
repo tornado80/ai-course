@@ -74,16 +74,19 @@ class State:
 class Node:
     def __init__(self,
                  state: State,
-                 cost: int,
-                 parent=None,
-                 action: Action = None):
+                 g_cost: int,
+                 h_cost: int,
+                 parent,
+                 action: Action):
         self.parent = parent
         self.state: State = state
-        self.cost: int = cost
+        self.f_cost: int = g_cost + h_cost
+        self.g_cost: int = g_cost
+        self.h_cost: int = h_cost
         self.action: Action = action
 
     def pretty_print(self):
-        print(f"Action: {self.action}, Cost: {self.cost}")
+        print(f"Action: {self.action}, F-cost: {self.f_cost}, G-cost: {self.g_cost}, H-cost: {self.h_cost}")
         self.state.pretty_print()
 
 
@@ -119,11 +122,11 @@ class Puzzle:
             for child_state, action in parent_node.state.adjacent_states()
         ]
 
-    @staticmethod
-    def __child_node(parent_node: Node, child_state: State, action: Action) -> Node:
+    def __child_node(self, parent_node: Node, child_state: State, action: Action) -> Node:
         return Node(
             child_state,
-            parent_node.cost + 1,  # step cost is 1
+            parent_node.g_cost + 1,  # step cost is 1
+            self.__heuristic(child_state),
             parent_node,
             action
         )
@@ -131,11 +134,16 @@ class Puzzle:
     def solve(self) -> List[Node] | None:
         frontier = AdaptableHeapPriorityQueue()
         explored = set()
-        initial_node = Node(self.__initial_state, 0)
+        initial_node = Node(
+            self.__initial_state,
+            0,
+            self.__heuristic(self.__initial_state),
+            None,
+            None
+        )
         frontier_nodes_by_states = {self.__initial_state: initial_node}
-        initial_node_heuristic = self.__heuristic(self.__initial_state)
         frontier_locators_by_nodes = {
-            initial_node: frontier.add(initial_node_heuristic, initial_node)
+            initial_node: frontier.add(initial_node.f_cost, initial_node)
         }
         while not frontier.is_empty():
             key, node = frontier.remove_min()
@@ -146,15 +154,14 @@ class Puzzle:
             explored.add(node.state)
             for child in self.__children(node):
                 if child.state not in explored and child.state not in frontier_nodes_by_states:
-                    heuristic = self.__heuristic(child.state)
-                    locator = frontier.add(child.cost + heuristic, child)
+                    locator = frontier.add(child.f_cost, child)
                     frontier_nodes_by_states[child.state] = child
                     frontier_locators_by_nodes[child] = locator
                 elif child.state in frontier_nodes_by_states:
                     suspect = frontier_nodes_by_states[child.state]
-                    if suspect.cost > child.cost:
+                    if suspect.f_cost > child.f_cost:
                         suspect_locator = frontier_locators_by_nodes[suspect]
-                        frontier.update(suspect_locator, child.cost, child)
+                        frontier.update(suspect_locator, child.f_cost, child)
                         del frontier_nodes_by_states[suspect.state]
                         del frontier_locators_by_nodes[suspect]
                         frontier_nodes_by_states[child.state] = child
@@ -188,7 +195,7 @@ if __name__ == "__main__":
         ]
     ).solve()
     """
-    """
+
     solution = Puzzle(
         15,
         [
@@ -204,6 +211,7 @@ if __name__ == "__main__":
             [13, 14, 15, None]
         ]
     ).solve()
+
     """
     solution = Puzzle(
         15,
@@ -220,5 +228,21 @@ if __name__ == "__main__":
             [13, 14, 15, None]
         ]
     ).solve()
+    """
+    """
+    solution = Puzzle(
+        8,
+        [
+            [5, 6, 7],
+            [4, None, 8],
+            [3, 2, 1]
+        ],
+        [
+            [1, 2, 3],
+            [8, None, 4],
+            [7, 6, 5]
+        ]
+    ).solve()
+    """
     for node in solution:
         node.pretty_print()
