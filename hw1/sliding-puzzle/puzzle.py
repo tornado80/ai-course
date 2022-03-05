@@ -2,7 +2,7 @@ from enum import Enum
 from copy import deepcopy
 from prettytable import PrettyTable
 from typing import List
-from adaptable_heap_priority_queue import AdaptableHeapPriorityQueue
+from priority_queue import AdaptableHeapPriorityQueue
 
 
 class Action(Enum):
@@ -71,7 +71,8 @@ class State:
 
 
 class Node:
-    def __init__(self, state: State, g_cost: int, h_cost: int, parent, action: Action | None):
+    def __init__(self, state: State, g_cost: int, h_cost: int,
+                 parent, action: Action | None):
         self.parent = parent
         self.state: State = state
         self.f_cost: int = g_cost + h_cost
@@ -85,7 +86,8 @@ class Node:
 
 
 class Puzzle:
-    def __init__(self, initial_state_matrix: List[List], goal_state_matrix: List[List]):
+    def __init__(self, initial_state_matrix: List[List],
+                 goal_state_matrix: List[List]):
         self.__initial_state = State(initial_state_matrix)
         self.__goal_state = State(goal_state_matrix)
         self.__goal_state_cells_positions = {
@@ -96,7 +98,10 @@ class Puzzle:
     def __heuristic(self, state: State) -> int:
         s = 0
         for cell, goal_position in self.__goal_state_cells_positions.items():
-            s += self.__manhattan_distance(state.find_position(cell), goal_position)
+            s += self.__manhattan_distance(
+                state.find_position(cell),
+                goal_position
+            )
         return s
 
     @staticmethod
@@ -112,7 +117,8 @@ class Puzzle:
             for child_state, action in parent_node.state.adjacent_states()
         ]
 
-    def __child_node(self, parent_node: Node, child_state: State, action: Action) -> Node:
+    def __child_node(self, parent_node: Node, child_state: State,
+                     action: Action) -> Node:
         return Node(
             child_state,
             parent_node.g_cost + 1,  # step cost is 1
@@ -160,7 +166,8 @@ class Puzzle:
                 return self.__solution(node)
             explored.add(node.state)
             for child in self.__children(node):
-                if child.state not in explored and child.state not in frontier_nodes_by_states:
+                if child.state not in explored and \
+                        child.state not in frontier_nodes_by_states:
                     add_to_frontier(child.f_cost, child)
                 elif child.state in frontier_nodes_by_states:
                     suspect = frontier_nodes_by_states[child.state]
@@ -173,7 +180,7 @@ class Puzzle:
     def __recursively_find_solution(self, node: Node) -> List[Node]:
         if node.parent is None:
             return [node]
-        path = self.__solution(node.parent)
+        path = self.__recursively_find_solution(node.parent)
         path.append(node)
         return path
 
@@ -246,6 +253,6 @@ def test4():
 
 
 if __name__ == "__main__":
-    for solution in [test1(), test2()]:
+    for solution in [test1(), test2(), test4()]:
         for node in solution:
             node.pretty_print()
