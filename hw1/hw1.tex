@@ -4,6 +4,7 @@
 \usepackage{xcolor}
 \usepackage{tikz}
 \usepackage{hyperref}
+\usepackage{tabularx}
 \usepackage{amssymb}
 \usepackage{listings}
 \usepackage[margin=1in]{geometry}
@@ -47,7 +48,34 @@
 	}
 \begin{enumerate}
 	\item 
+	جدول زیر را ببینید.
+\begin{latin}
+		\begin{tabularx}{\textwidth}{|X|X|X|X|X|}
+		\hline
+		Problem & Performance & Environment & Actuators & Sensors \\
+		\hline
+		Aircraft autopilot system & Passenger satisfaction; choose safest and shortest airway; prepared for unforeseen circumstances & Runways, sky, weather, wind, other aircrafts  & Engine power control; mechanical actuators like flaps, slats, rudders, elevators and spoilers; landing gear control; cabin ventilators & GPS system; pressure/humidity/temperature sensors; cabin pressure/temperature sensors; altimeters; gyroscopes; compasses; oxygen sensors' satellite communication hardware and software  \\
+		\hline
+		Part-picking robot & Percentage of parts in correct bins & The industrial environment like factory pipeline or house; conveyor belt; bins & Joint arms; motor and wheels if mobile &  Camera; joint angle sensors; ultrasonic sensors \\
+		\hline
+	\end{tabularx}
+\end{latin}
+
+	
 	\item
+	جدول زیر را ببینید.
+	\begin{latin}
+		\small
+		\begin{tabularx}{\textwidth}{|X|X|X|X|X|X|X|}
+			\hline
+			Problem & Fully observable/ Partially observable & Deterministic/ Stochastic & Episodic/ Sequential & Static/ Dynamic & Discrete/ Continuous & Known/ Unknown \\
+			\hline
+			Robot playing Tic-Tac-Toe & Fully observable, because agents can perceive the complete state of the game & Deterministic, because each state of the game is determined by agents' actions & Sequential, because agents' decisions affect future decisions and game states & Static, because environment or the game state does not change when agents are not taking actions & Discrete, because the set of game states are finite  & Known, because agents know the rules and dynamics of the game \\
+			\hline
+			Chess with clock & Fully observable, because agents can perceive the complete state of the game and time passed & Deterministic, like above & Sequential, like above & Semi-dynamic, because passage of time affects agent's performance score & Continuous, due to consideration of time while chess alone has discrete state space & Known, like above \\
+			\hline
+		\end{tabularx}
+	\end{latin}
 \end{enumerate}
 			\section*{
 		سوال دوم
