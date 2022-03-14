@@ -1,0 +1,110 @@
+\documentclass{article}
+\usepackage{setspace}
+\usepackage{amsmath}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usepackage{hyperref}
+\usepackage{tabularx}
+\usepackage{amssymb}
+\usepackage{listings}
+\usepackage[margin=1in]{geometry}
+\usepackage{xepersian}
+\settextfont{Yas}
+% Fixture for Xepersian 23 bug of setting persian math digit fonts
+\ExplSyntaxOn\cs_set_eq:NN\etex_iffontchar:D\tex_iffontchar:D\ExplSyntaxOff
+\setmathdigitfont{Yas}
+\onehalfspacing
+\title{
+	تمرین دوم هوش مصنوعی
+}
+\author{
+	امیرحسین رجبی (۹۸۱۳۰۱۳)
+}
+\renewcommand{\labelenumi}{\alph{enumi})}
+\lstset{
+	language=Python, 
+	basicstyle=\ttfamily, 
+	tabsize=4, 
+	frame=single,
+	commentstyle=\itshape\color{lightgray},
+	keywordstyle=\bfseries\color{blue},
+	identifierstyle=\color{black},
+	stringstyle=\color{red}, 
+	numbers=left
+}
+\bibliographystyle{plain}
+\hypersetup{
+	colorlinks=true,
+	linkcolor=blue,
+	filecolor=blue,
+	citecolor = black,      
+	urlcolor=cyan,
+}
+\newcommand{\code}[1]{\lr{\lstinline|#1|}}
+\begin{document}
+	\maketitle
+	\section*{
+		سوال اول
+	}
+	\begin{enumerate}
+		\item 
+		معادل الگوریتم 
+		\lr{Random walk}
+		خواهد بود زیرا اگر $x$ تنها حالت جمعیت باشد، دو حالت والد همان $x$ خواهند بود و در نتیجه پس از
+		\lr{Cross over}
+		فرزند همان $x$ خواهد شد و با جهش در یکی از حروف $x$ به یکی از همسایه‌های $x$ خواهیم رفت که دقیقا همان قدم زن تصادفی است.
+		
+	\item 
+	معادل الگوریتم 
+	\lr{Hill Climbing}
+	خواهد بود زیرا در واقع بهترین همسایه حالت فعلی را انتخاب می‌کنیم و سراغ آن می‌رویم.
+	\item 
+	اگر $k$ بزرگ شود الگوریتم به این صورت خواهد بود که بسیاری از حالات و همسایه‌های آنها مورد بررسی قرار می‌گیرند و شبیه 
+	\lr{Brute force}
+	می‌شود که دائما تعداد زیادی از بهترین‌ها را انتخاب و وجود حالت هدف را در آن ها بررسی می‌کند.
+	\item 
+	اگر دما همواره صفر باشد هیچ گاه به حالتی با ارزش کمتر نخواهیم رفت و دقیقا شبیه 
+	\lr{Hill Climbing}
+	رفتار می‌کند. (دقت کنید لازم است شظر خاتمه الگوریتم تغییر کند به این که هیچ همسایه بهتری وجود ندارد و اگرنه با شرط فعلی که صفر بودن $T$ است الگوریتم از حلقه خارج می‌شود و جواب تصادفی نخست را برمی‌گرداند.)
+	\item
+	الگوریتم به سرعت به یک مینیموم یا ماکسموم محلی همگرا می‌شود چرا که الگوریتم تنها در صورتی از تپه پایین خواهد آمد که
+	$\Delta E$
+	کوچک باشد (هم مرتبه $T$ باشد) و برای کاهش ارتفاع زیاد، ($-\Delta E$ بزرگ) عملیات پایین آمدن 
+	\lr{Reject}
+	شده و فقط با مشاهده همسایه‌ها با ارزش بزرگتر، از تپه بالا می‌رود در نتیجه به سرعت مانند 
+	\lr{Hill Climbing}
+	رفتار خواهد کرد. اگر $T$ ثابت باشد الگوریتم از ابتدا تنها زمانی سراغ پایین آمدن از تپه می‌رود که 
+	$\Delta E$
+	بسیار کوچک باشد یعنی حول همان جوابی که هست یا باقی می‌ماند یا سراغ جواب های بهتر می‌رود ولی خطر کاهش ارتفاع زیاد را به جان نمی‌خرد. تقریبا شبیه 
+	\lr{Hill Climbing}
+	عمل خواهد کرد.
+	\end{enumerate}
+
+	\section*{
+		سوال دوم
+	}
+	\begin{enumerate}
+		\item 
+	 	همه جایگشت های $n$ کلمه خواهد بود. اگر $n$ کلمه متمایز باشند می‌شود $n!$ و اگر $i$ کلمه متمایز داشته باشیم و  تکرار هر کدام 
+	 	$t_1, \dots , t_i$
+	 	باشند برابر
+	 	$\frac{n!}{t_1!t_2!\cdots t_n!}$
+	 	خواهد بود.
+	 	\item 
+	 	یک نوع می‌توان همسایگی بین جملات تعریف کرد به این صورت که دو جمله همسایه باشند اگه جای دو کلمه آنها عوض شده باشد. مثلا جملات «این است مجازی ترم هوش مصنوعی» و «هوش مصنوعی است این ترم مجازی» همسایه جمله داده شده خواهند بود.
+	 	\item 
+	 	خیر زیرا اساسا الگوریتم 
+	 	\lr{Hill Climbing}
+	 	الگوریتمی
+	 	\lr{Complete}
+	 	نیست و ممکن است در مینیموم و ماکسیموم‌های محلی و فلات‌ها گیر کند و عملا هیچ‌گاه به نقطه بهین سراسری نرسد.
+	 	\item 
+	 	اگر دو جمله «این است مجازی ترم هوش مصنوعی» و «هوش مصنوعی است این ترم مجازی» در مرحله
+	 	\lr{Selection}
+	 	به عنوان والد انتخاب شده باشند، نتیجه عملیات 
+	 	\lr{Cross over}
+	 	با محل شکست پس از دومین کلمه، می‌تواند فرزندان روبرو باشد: «این است این ترم مجازی» و «هوش مصنوعی است مجازی ترم هوش مصنوعی».
+	 	
+	\end{enumerate}
+
+\end{document}

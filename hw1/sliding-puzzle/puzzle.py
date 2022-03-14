@@ -252,7 +252,22 @@ def test4():
     ).solve()
 
 
+def test5():
+    return Puzzle(
+        [
+            [8, None, 6],
+            [5, 4, 7],
+            [2, 3, 1]
+        ],
+        [
+            [None, 1, 2],
+            [3, 4, 5],
+            [6, 7, 8]
+        ]
+    ).solve()
+
+
 if __name__ == "__main__":
-    for solution in [test1(), test2(), test4()]:
+    for solution in [test5()]:
         for node in solution:
             node.pretty_print()
