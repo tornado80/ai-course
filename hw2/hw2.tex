@@ -225,7 +225,7 @@ def simulated_annealing(vertex_count: int, graph: dict, temperature: int):
 	return current_order, current_value, plot_data
 	\end{lstlisting}
 \end{latin}
-مابقی الگوریتم مانند الگوریتم ذکر شده در شکل ۴.۵ کتاب پیاده سازی شده است. نمودار تابع هدف (\code{current\_value}) براساس دما (\code{temperature}) به ازای ک بار اجرای الگوریتم روی ورودی نمونه داده شده به صورت زیر است: 
+مابقی الگوریتم مانند الگوریتم ذکر شده در شکل پنجم از فصل چهارم کتاب پیاده سازی شده است. نمودار تابع هدف (\code{current\_value}) براساس \lr{iteration}های الگوریتم به ازای بک بار اجرای آن روی ورودی نمونه داده شده به صورت زیر است: 
 
 \begin{center}
 	\begin{latin}
@@ -244,7 +244,7 @@ def simulated_annealing(vertex_count: int, graph: dict, temperature: int):
 \begin{figure}[h]
 	\includegraphics{simulated-annealing/fig}
 	\caption{
-	نمودار تابع هدف (\code{current\_value}) براساس دما (\code{temperature})	
+	نمودار تابع هدف (\code{current\_value}) براساس \lr{iteration}ها
 }
 \end{figure}
 \end{document}
