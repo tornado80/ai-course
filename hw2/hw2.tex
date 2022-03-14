@@ -5,6 +5,7 @@
 \usepackage{tikz}
 \usepackage{hyperref}
 \usepackage{tabularx}
+\usepackage{graphicx}
 \usepackage{amssymb}
 \usepackage{listings}
 \usepackage[margin=1in]{geometry}
@@ -106,5 +107,144 @@
 	 	با محل شکست پس از دومین کلمه، می‌تواند فرزندان روبرو باشد: «این است این ترم مجازی» و «هوش مصنوعی است مجازی ترم هوش مصنوعی».
 	 	
 	\end{enumerate}
+	\section*{
+	گزارش پیاده سازی الگوریتم 
+	\lr{Simulated Annealing}
+}
+برای هر حالت مسئله یا ترتیب دهی رئوس مانند $v_1, v_2, \dots, v_n$، تابع هدف $f$ برابر تعداد یال‌هایی مانند $v_i \rightarrow v_j$ خواهد بود که $i < j$؛ یعنی تعداد یال‌ها در جهت ترتیب نهایی. هدف بیشینه کردن تابع $f$ است. به وضوح بیشترین مقدار $f$ برابر تعداد یال‌های گراف خواهد بود. همچنین همسایگی یک حالت مانند $v_1, v_2, \dots, v_n$ همه حالت‌هایی خواهند بود که با جابجایی $v_i$ و $v_j$ بدست آمده باشند؛ یعنی $v_1, \dots, v_j, \dots, v_i, \dots, v_n$ که $i < j$. در این صورت الگوریتم \lr{SA} را می‌توان برای محاسبه ترتیب توپولیژیکی گراف ورودی به کار برد.
 
+تابع 
+\code{read\_graph()}
+گراف را از فایل خوانده و تعداد رئوس، تعداد یال‌ها و یک 
+\code{dict}
+بر می‌گرداند که هر راس مانند $u$ را به مجموعه (\code{set}) رئوسی نگاشت می‌کند که یالی جهت دار از $u$ به آنها وجود داشته باشد.
+
+\begin{latin}
+\begin{lstlisting}
+def read_graph(file_name):
+	with open(file_name) as f:
+		lines = f.readlines()
+		vertex_count = int(lines[0])
+		edge_count = 0
+		graph = {}
+		for vertex in range(1, vertex_count + 1):
+			graph[vertex] = set()
+		for line in lines[1:]:
+			x, y = map(int, line.split())
+			edge_count += 1
+			graph[x].add(y)
+	return vertex_count, edge_count, graph
+\end{lstlisting}
+\end{latin}
+
+تابع 
+\code{val()}
+مقدار تابع هدف را محاسبه می‌کند که پیاده سازی آن به صورت زیر است:
+\begin{latin}
+\begin{lstlisting}
+def val(graph: dict, order: list):
+	total = 0
+	for i in range(len(order)):
+		for j in range(i + 1, len(order)):
+			if order[j] in graph[order[i]]:
+				total += 1
+	return total
+\end{lstlisting}
+\end{latin}
+تابع 
+\code{random\_successor\_and\_value(graph, current\_order, current\_value)}
+با ورودی گرفتن گراف مسئله و حالت فعلی مقدار تابع هدف در حالت فعلی، یک حالت تصادفی از بین همسایه‌ها انتخاب می‌کند. در واقع به تصادف دو اندیس از ترتیب توپولیژیکی فرضی فعلی را انتخاب کرده و این دو راس را \lr{swap} می‌کند. برای بهبود سرعت الگوریتم دوباره از تابع 
+\code{val()}
+با پیچیدگی
+$\mathcal{O}(n^2)$
+برای محاسبه مقدار تابع هدف در حالت همسایه استفاده نشده است و به کمک مقدار فعلی تابع هدف با الگوریتمی از مرتبه 
+$\mathcal{O}(n)$
+مقدار $f$ حالت مجاور برگردانده می‌شود. در این الگوریتم تغییرات تابع $f$ روی رئوس بین 
+$v_i$
+و
+$v_j$
+در ترتیب توپولیژیکی محاسبه می‌شوند چرا که جابجایی این دو راس تاثیری در باقی رئوس و تغییر تابع $f$ به سبب آنها ندارد.
+\begin{latin}
+\begin{lstlisting}
+def random_successor_and_value(graph: dict, current_order: list, 
+							   current_value: int):
+	i, j = sorted(random.sample(range(len(current_order)), k=2))
+	delta = 0
+	if current_order[i] in graph[current_order[j]]:
+		delta = 1
+	if current_order[j] in graph[current_order[i]]:
+		delta = -1
+	for k in range(i + 1, j):
+		if current_order[i] in graph[current_order[k]]:
+			delta += 1
+		if current_order[j] in graph[current_order[k]]:
+			delta -= 1
+		if current_order[k] in graph[current_order[i]]:
+			delta -= 1
+		if current_order[k] in graph[current_order[j]]:
+			delta += 1
+	successor = current_order.copy()
+	successor[i], successor[j] = successor[j], successor[i]
+	return successor, current_value + delta
+\end{lstlisting}
+\end{latin}
+در نهایت الگوریتم 
+\lr{SA}
+پیاده سازی شده است. در واقع یک ترتیب تصادفی برای شروع انتخاب شده و مقدرا تابع هدف به کمک تابع
+\code{val()}
+محاسبه شده است. در ادامه تابعی کمکی به نام
+\code{decide()}
+تعریف شده است که به احتمال $p$ (ورودی آن) مقدار 
+\code{True}
+و به احتمال
+$1 - p$
+مقدار
+\code{False}
+بر می‌گرداند. 
+\begin{latin}
+	\begin{lstlisting}
+def simulated_annealing(vertex_count: int, graph: dict, temperature: int):
+	current_order = [i for i in range(1, vertex_count + 1)]
+	random.shuffle(current_order)
+	current_value = val(graph, current_order)
+	decide = lambda probability: random.random() < probability
+	print(current_order, current_value)
+	plot_data = [current_value]
+	while temperature > 1e-6:
+		successor, successor_value = random_successor_and_value(
+			graph, 
+			current_order, 
+			current_value
+		)
+		delta = successor_value - current_value
+		if delta >= 0 or decide(math.exp(delta / temperature)):
+			current_order = successor
+			current_value = successor_value
+		temperature *= 0.9
+		plot_data.append(current_value)
+	return current_order, current_value, plot_data
+	\end{lstlisting}
+\end{latin}
+مابقی الگوریتم مانند الگوریتم ذکر شده در شکل ۴.۵ کتاب پیاده سازی شده است. نمودار تابع هدف (\code{current\_value}) براساس دما (\code{temperature}) به ازای ک بار اجرای الگوریتم روی ورودی نمونه داده شده به صورت زیر است: 
+
+\begin{center}
+	\begin{latin}
+\begin{tabular}{|c|c|c|}
+	\hline
+	& \code{goal\_function} & \code{total\_edge\_count} \\
+	\hline
+	\code{initial\_order} & 20 & 54 \\
+	\hline
+	\code{goal\_order} & 47 & 54 \\
+	\hline
+\end{tabular}
+\end{latin}
+\end{center}
+
+\begin{figure}[h]
+	\includegraphics{simulated-annealing/fig}
+	\caption{
+	نمودار تابع هدف (\code{current\_value}) براساس دما (\code{temperature})	
+}
+\end{figure}
 \end{document}
