@@ -100,7 +100,7 @@ class GeneticAlgorithm:
 
 
 if __name__ == "__main__":
-    ga = GeneticAlgorithm("input.txt", 1000, 0.4, 2, 30)
+    ga = GeneticAlgorithm("input.txt", 1000, 0.3, 2, 30)
     solution, solution_generation, plot_data, total_generation = ga.simulate()
     print(f"Best solution found: {solution[0]} with fitness {ga.count_edges_in_topological_order(solution[0])} "
           f"after {solution_generation} generations in total {total_generation} generations.")
