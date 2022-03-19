@@ -13,7 +13,7 @@ class GeneticAlgorithm:
                  max_population: int,
                  max_generation: int,
                  fitness_scale: float):
-        self.vertex_count, self.edge_count, self.graph = self.read_graph(file_name)
+        self.vertex_count, self.edge_count, self.graph, self.updated_hunt, self.updated_edge_count = self.read_graph(file_name)
         self.population_size = population_size
         self.fitness_scale = fitness_scale
         self.max_population = max_population
@@ -22,7 +22,17 @@ class GeneticAlgorithm:
         self.mutation_coefficient = mutation_coefficient
 
     def fitness(self, chromosome: list):
-        return 2 ** (self.fitness_scale * self.count_edges_in_topological_order(chromosome) / self.edge_count)
+        #return self.count_updated_edges_in_topological_order(chromosome)
+        return 2 ** (self.fitness_scale * self.count_updated_edges_in_topological_order(chromosome) / self.updated_edge_count)
+
+    def count_updated_edges_in_topological_order(self, chromosome: list):
+        n = self.vertex_count
+        c = 0
+        for i in range(n):
+            for j in range(i, n):
+                if (self.updated_hunt[chromosome[j]][chromosome[i]]):
+                    c += 1
+        return self.updated_edge_count - c
 
     def count_edges_in_topological_order(self, chromosome: list):
         total = 0
@@ -48,6 +58,69 @@ class GeneticAlgorithm:
         child2.extend(parent1[cut:])
         return (child1, self.fitness(child1)), (child2, self.fitness(child2))
 
+    def reproduce1(self, par1, par2):
+        n = self.vertex_count
+        lcs = [[0 for _ in range(self.vertex_count)] for _ in range(self.vertex_count)]  # longest common substring
+        prev = [[0 for _ in range(self.vertex_count)] for _ in range(self.vertex_count)]  # longest common substring
+        for i in range(self.vertex_count):
+            for j in range(self.vertex_count):
+                val = par2[j]
+                ind = par1.index(val)
+                if (j > 0):
+                    lcs[i][j] = lcs[i][j - 1]
+                    prev[i][j] = prev[i][j - 1]
+                if (ind <= i):
+                    if (ind > 0 and j > 0 and lcs[i][j] < lcs[ind - 1][j - 1] + 1):
+                        lcs[i][j] = lcs[ind - 1][j - 1] + 1
+                        prev[i][j] = val
+                    elif lcs[i][j] == 0:
+                        lcs[i][j] = 1
+                        prev[i][j] = val
+        real_lcs = []
+        iter = 0
+        i, j = n - 1, n - 1
+        while iter < lcs[n - 1][n - 1]:
+            real_lcs.insert(0, prev[i][j])
+            i, j = par1.index(prev[i][j]) - 1, par2.index(prev[i][j]) - 1
+            iter += 1
+        real_lcs_set = set(real_lcs)
+        child1 = []
+        complement = []
+        for gene in par2:
+            if gene not in real_lcs_set:
+                complement.append(gene)
+        complement_iter = 0
+        for gene in par1:
+            if gene in real_lcs_set:
+                child1.append(gene)
+            else:
+                child1.append(complement[complement_iter])
+                complement_iter += 1
+
+        child2 = []
+        complement = []
+        for gene in par1:
+            if gene not in real_lcs_set:
+                complement.append(gene)
+        complement_iter = 0
+        for gene in par2:
+            if gene in real_lcs_set:
+                child2.append(gene)
+            else:
+                child2.append(complement[complement_iter])
+                complement_iter += 1
+        return (child1, self.fitness(child1)), (child2, self.fitness(child2))
+
+    def reproduce2(self, par1, par2):
+        sum_index = []
+        for i in range(1, self.vertex_count + 1):
+            sum_index.append((par1.index(i) + par2.index(i), i))
+        sum_index.sort()
+        child = []
+        for i in range(self.vertex_count):
+            child.append(sum_index[i][1])
+        return child, self.fitness(child)
+
     def create_population(self):
         population = []
         for i in range(self.population_size):
@@ -67,7 +140,20 @@ class GeneticAlgorithm:
                 x, y = map(int, line.split())
                 edge_count += 1
                 graph[x].add(y)
-        return vertex_count, edge_count, graph
+        n = vertex_count
+        updated_hunt = [[False for _ in range(n + 1)] for _ in range(n + 1)]  # Matrix n * n (from 1 to n+1)
+        m1 = 0  # The counter for count the "True" elements in "updated_hunt"
+        for i in range(1, n + 1):
+            hunter = [i]
+            while hunter:
+                head = hunter[0]
+                for j in range(1, n + 1):
+                    if head in graph[j] and updated_hunt[j][i] == False:
+                        updated_hunt[j][i] = True
+                        m1 += 1
+                        hunter.append(j)
+                hunter.pop(0)
+        return vertex_count, edge_count, graph, updated_hunt, m1
 
     def mutate(self, chromosome: list):
         i, j = random.sample(range(len(chromosome)), k=2)
@@ -112,15 +198,18 @@ if __name__ == "__main__":
     ga = GeneticAlgorithm(
         file_name="input.txt",
         population_size=1000,
-        max_population=1200,
-        mutation_coefficient=0.3,
-        selection_coefficient=0.5,
-        max_generation=20,
+        max_population=2,
+        mutation_coefficient=0.7,
+        selection_coefficient=0.8,
+        max_generation=1000,
         fitness_scale=20
     )
-    best_chromosome, best_fitness, best_generation, plot_data, total_generation = ga.simulate()
-    print(f"Best solution found: {best_chromosome} "
-          f"with fitness {ga.count_edges_in_topological_order(best_chromosome)} "
-          f"after {best_generation} generations in total {total_generation} generations.")
-    plt.plot(plot_data)
-    plt.show()
+    while True:
+        best_chromosome, best_fitness, best_generation, plot_data, total_generation = ga.simulate()
+        print(f"Best solution found: {best_chromosome} "
+              f"with fitness {ga.count_edges_in_topological_order(best_chromosome)} "
+              f"after {best_generation} generations in total {total_generation} generations.")
+        if best_generation <= 3:
+            break
+    #plt.plot(plot_data)
+    #plt.show()
