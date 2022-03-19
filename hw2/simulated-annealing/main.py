@@ -69,7 +69,7 @@ def simulated_annealing(vertex_count: int, graph: dict, temperature: int):
 
 if __name__ == "__main__":
     vertex_count, edge_count, graph = read_graph("input.txt")
-    result, result_value, plot_data = simulated_annealing(vertex_count, graph, 10000)
+    result, result_value, plot_data = simulated_annealing(vertex_count, graph, 100)
     print(result, result_value, edge_count)
     plt.plot(plot_data)
     plt.show()
