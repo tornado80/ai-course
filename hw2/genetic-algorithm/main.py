@@ -95,9 +95,10 @@ class GeneticAlgorithm:
             if self.is_goal(local_best_chromosome):
                 break
             new_population = []
-            population_weights = [x[1] for x in population]
+            parent_population = population[:selection_count]
+            population_weights = [x[1] for x in parent_population]
             for i in range(selection_count):
-                (parent1, _), (parent2, _) = random.choices(population, weights=population_weights, k=2)
+                (parent1, _), (parent2, _) = random.choices(parent_population, weights=population_weights, k=2)
                 child1, child2 = self.reproduce(parent1, parent2)
                 new_population.extend([child1, child2])
             for i in range(len(new_population)):
