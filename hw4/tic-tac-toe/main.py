@@ -15,15 +15,6 @@ def get_symbol_from_user():
             print("Invalid symbol!", end=" ")
 
 
-def get_opponent_symbol(player_symbol: str):
-    if player_symbol == "x":
-        return "o"
-    elif player_symbol == "o":
-        return "x"
-    else:
-        raise ValueError("Invalid symbol!")
-
-
 def get_players_from_user(player1: Player, player2: Player) -> (Player, Player):
     while True:
         first_player = input(f"Who shall begin? ([{player1.name[0]}]{player1.name[1:]}/"
@@ -63,7 +54,7 @@ def prompt_for_initial_state():
 
 human_symbol = get_symbol_from_user()
 human = Human(human_symbol)
-agent = Agent(get_opponent_symbol(human_symbol))
+agent = Agent(TicTacToe.get_opponent_symbol(human_symbol))
 initial_state = prompt_for_initial_state()
 player1, player2 = get_players_from_user(human, agent)
 game = TicTacToe(player1, player2, initial_state)

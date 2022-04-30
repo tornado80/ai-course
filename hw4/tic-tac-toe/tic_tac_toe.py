@@ -81,3 +81,12 @@ class TicTacToe:
         for player in self.__players:
             if player.symbol == symbol:
                 return player
+
+    @staticmethod
+    def get_opponent_symbol(player_symbol: str):
+        if player_symbol == "x":
+            return "o"
+        elif player_symbol == "o":
+            return "x"
+        else:
+            raise ValueError("Invalid symbol!")

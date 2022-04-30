@@ -12,7 +12,8 @@ class Agent(Player):
         self.__minimax_call_count = 0
         utility, action = self.__simple_minimax(state, PlayerType.MAX)
         state[action] = self.symbol
-        print(f"{self.name} has played {action + 1} after investigating {self.__minimax_call_count} states!")
+        print(f"{self.name} has played {action + 1} after investigating {self.__minimax_call_count} states. "
+              f"Final utility for this state is {utility}.")
 
     def __simple_minimax(self, state: list[str], player_type: PlayerType) -> (int, int):
         self.__minimax_call_count += 1
@@ -37,7 +38,7 @@ class Agent(Player):
             for i in range(9):
                 if state[i] != '-':
                     continue
-                state[i] = self.symbol
+                state[i] = TicTacToe.get_opponent_symbol(self.symbol)
                 utility, _ = self.__simple_minimax(state, PlayerType.MAX)
                 state[i] = '-'
                 if utility < value:
