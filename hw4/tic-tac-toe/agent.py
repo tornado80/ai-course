@@ -1,21 +1,22 @@
 import math
-
 from player import Player, PlayerType
 from tic_tac_toe import TicTacToe
 
 
 class Agent(Player):
-    def __init__(self, symbol: str, name: str = "Computer"):
+    def __init__(self, symbol: str, name: str = "Computer", alpha_beta_pruning=True):
         super().__init__(name, symbol)
+        self.__minimax_call_count = 0
+        self.__alpha_beta_pruning = alpha_beta_pruning
 
     def move(self, state: list[str]):
         self.__minimax_call_count = 0
-        utility, action = self.__simple_minimax(state, PlayerType.MAX)
+        utility, action = self.__minimax(state, PlayerType.MAX)
         state[action] = self.symbol
         print(f"{self.name} has played {action + 1} after investigating {self.__minimax_call_count} states. "
-              f"Final utility for this state is {utility}.")
+              f"State utility is {utility}.")
 
-    def __simple_minimax(self, state: list[str], player_type: PlayerType) -> (int, int):
+    def __minimax(self, state: list[str], player_type: PlayerType, alpha=-math.inf, beta=math.inf) -> (int, int):
         self.__minimax_call_count += 1
         utility = self.__utility(state)
         if utility is not None:
@@ -27,11 +28,15 @@ class Agent(Player):
                 if state[i] != '-':
                     continue
                 state[i] = self.symbol
-                utility, _ = self.__simple_minimax(state, PlayerType.MIN)
+                utility, _ = self.__minimax(state, PlayerType.MIN, alpha, beta)
                 state[i] = '-'
                 if utility > value:
                     best_action = i
                     value = utility
+                if self.__alpha_beta_pruning:
+                    if value >= beta:
+                        return value, None
+                    alpha = max(value, alpha)
             return value, best_action
         elif player_type == PlayerType.MIN:
             value = math.inf
@@ -39,11 +44,15 @@ class Agent(Player):
                 if state[i] != '-':
                     continue
                 state[i] = TicTacToe.get_opponent_symbol(self.symbol)
-                utility, _ = self.__simple_minimax(state, PlayerType.MAX)
+                utility, _ = self.__minimax(state, PlayerType.MAX, alpha, beta)
                 state[i] = '-'
                 if utility < value:
                     best_action = i
                     value = utility
+                if self.__alpha_beta_pruning:
+                    if value <= alpha:
+                        return value, None
+                    beta = min(value, beta)
             return value, best_action
 
     def __utility(self, state: list[str]):
