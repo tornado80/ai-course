@@ -24,6 +24,16 @@ class GeneticAlgorithm:
     def fitness(self, chromosome: list):
         return 2 ** (self.fitness_scale * self.count_edges_in_topological_order(chromosome) / self.edge_count)
 
+    def fitness1(self, chromosome: list):
+        total = 0
+        for i in range(len(chromosome)):
+            edge = 0
+            for j in range(i + 1, len(chromosome)):
+                if chromosome[j] in self.graph[chromosome[i]]:
+                    edge += 1
+            total += 2 ** (self.vertex_count - i) * edge
+        return total
+
     def count_edges_in_topological_order(self, chromosome: list):
         total = 0
         for i in range(len(chromosome)):
@@ -112,8 +122,8 @@ class GeneticAlgorithm:
 if __name__ == "__main__":
     ga = GeneticAlgorithm(
         file_name="input.txt",
-        population_size=1000,
-        max_population=1200,
+        population_size=100,
+        max_population=120,
         mutation_coefficient=0.3,
         selection_coefficient=0.5,
         max_generation=20,
