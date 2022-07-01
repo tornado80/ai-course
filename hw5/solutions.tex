@@ -1,0 +1,228 @@
+\documentclass{article}
+\usepackage{setspace}
+\usepackage{amsmath}
+\usepackage{xcolor}
+\usepackage{qtree}
+\usepackage{tikz}
+\usepackage{hyperref}
+\usepackage{tabularx}
+\usepackage{graphicx}
+\usepackage{amssymb}
+\usepackage{listings}
+\usepackage[margin=1in]{geometry}
+\usepackage{xepersian}
+\settextfont{Yas}
+\setmathdigitfont{Yas}
+\onehalfspacing
+\title{
+	تمرین پنجم هوش مصنوعی
+}
+\author{
+	امیرحسین رجبی (۹۸۱۳۰۱۳)
+}
+\renewcommand{\labelenumi}{\alph{enumi})}
+\lstset{
+	language=Python, 
+	basicstyle=\ttfamily, 
+	tabsize=4, 
+	frame=single,
+	commentstyle=\itshape\color{lightgray},
+	keywordstyle=\bfseries\color{blue},
+	identifierstyle=\color{black},
+	stringstyle=\color{red}, 
+	numbers=left
+}
+\bibliographystyle{plain}
+\hypersetup{
+	colorlinks=true,
+	linkcolor=blue,
+	filecolor=blue,
+	citecolor = black,      
+	urlcolor=cyan,
+}
+\newcommand{\code}[1]{\lr{\lstinline|#1|}}
+\onehalfspacing
+\begin{document}
+	\maketitle
+	
+	\section*{
+	سوال اول
+	}
+	در روش 
+	\lr{model-checking}
+	همه مدل‌ها بررسی می‌شوند و آنهایی که $KB$ در آنها برقرار است پاسخ مسئله است. اگر نماد‌های $P_r$، $P_b$  و $P_g$ به ترتیب به معنی وجود راه آزادی پشت در مربوطه باشند، ۸ مقدار دهی ممکن وجود دارد که از این میان تنها ۳ مقدار دهی که در آنها فقط یک نماد درست است ممکن است. (به دلیل وجود گزاره 
+	$(P_r \wedge \neg P_b \wedge \neg P_g) \vee (\neg P_r \wedge  P_b \wedge \neg P_g) \vee (\neg P_r \wedge \neg P_b \wedge  P_g)$
+	در پایگاه دانش)
+	اکنون سه حالت را بررسی می‌کنیم. 
+	\begin{enumerate}
+		\item 
+		$P_r \equiv True$:
+		این حالت ممکن \underline{نیست} زیرا دستور هر سه در درست خواهند بود.
+		\item 
+		$P_g \equiv True$:
+		این حالت ممکن \underline{است} چرا که دستور در سبز و آبی درست بوده و دستور در قرمز نادرست است.
+		\item 
+		$P_b \equiv True$
+		این حالت ممکن \underline{نیست} چرا که دستور هر سه در نادرست خواهند بود.
+	\end{enumerate}
+
+	پس راه آزادی پشت در سبز است. (دقت کنید دستور درها را به منطق گزاره‌ای ترجمه نکردیم ولی مانند شرط اول انجام می‌شود.)
+	\section*{
+	سوال دوم
+	}
+
+ابتدا همه جملات $KB$ را به فرم نرمال عطفی
+\LTRfootnote{Conjunctive Normal Form (CNF)}
+تبدیل می‌کنیم. خواهیم داشت:
+\begin{align*}
+	V \Rightarrow W &\equiv \neg V \vee W \\
+	P \Rightarrow Q &\equiv \neg P \vee Q \\
+	S \Rightarrow (U \vee T) &\equiv \neg S \vee U \vee T \\
+	(P \wedge R) \Rightarrow S &\equiv \neg P \vee \neg R \vee S 
+\end{align*}
+اکنون سعی می‌کنیم به کمک قواعد 
+\lr{resolution}
+نشان دهیم 
+$KB \models S$
+یا معادلا با فرض
+$KB \wedge \neg S$
+به تناقض برسیم. پس جملات زیر را داریم:
+$$\boxed{P} \; \boxed{V \vee T} \; \boxed{\neg P \vee U} \; \boxed{R \vee \neg Q} \; \boxed{\neg V \vee W} \; \boxed{\neg P \vee Q} \; \boxed{\neg S \vee U \vee T} \; \boxed{\neg P \vee \neg R \vee S} \; \boxed{\neg S}$$
+درخت زیر نحوه استدلال از جملات بالا را از برگ‌ها به سمت ریشه درخت نشان می‌دهد. با توجه به درخت به جمله تهی رسیده‌ایم و در نتیجه فرض خلف باطل بوده و $S$ با فرض برقراری $KB$ درست است پس $KB \models S$.
+\begin{figure*}[h]
+	\setLTR
+	\Tree 
+	[.$\boxed{}$
+		[.$\boxed{\textcolor{red}{S}}$
+			[.$\boxed{S \vee \textcolor{red}{\neg P}}$
+				[.$\boxed{\textcolor{red}{R}}$
+					[.$\boxed{\textcolor{red}{Q}}$
+						{$\boxed{\textcolor{red}{\neg P} \vee Q}$}
+						{$\boxed{\textcolor{red}{P}}$}
+					]
+					{$\boxed{\textcolor{red}{\neg Q} \vee R}$}
+				]
+				{$\boxed{\neg P \vee \textcolor{red}{\neg R} \vee S}$}
+			]
+			{$\boxed{\textcolor{red}{P}}$} 
+		] 
+		{$\boxed{\textcolor{red}{\neg S}}$} 
+	]
+\end{figure*}	
+\section*{
+	سوال سوم
+}
+ابتدا همه جملات $KB$ را به فرم نرمال عطفی تبدیل می‌کنیم. خواهیم داشت:
+\begin{align}
+	A \iff (B \vee E) \equiv \Big(A \Longrightarrow (B \vee E)\Big) \wedge \Big(A \Longleftarrow (B \vee E)\Big) &\equiv \stackrel{S_{1}^{1}}{(\neg A \vee B \vee E)} \wedge \stackrel{S_{1}^{2}}{(A \vee \neg B)} \wedge \stackrel{S_{1}^{3}}{(A \vee \neg E)} \tag{$S_1$} \\
+	E \Longrightarrow D &\equiv \neg E \vee D \tag{$S_2$} \\
+	C \wedge F \Longrightarrow \neg B &\equiv \neg C \vee \neg F \vee \neg B \tag{$S_3$} \\
+	E \Longrightarrow B &\equiv \neg E \vee B \tag{$S_4$} \\
+	B \Longrightarrow F &\equiv \neg B \vee F \tag{$S_5$} \\
+	B \Longrightarrow C &\equiv \neg B \vee C \tag{$S_6$}
+\end{align}
+در هر فراخوانی تابع $DPLL$ ابتدا نماد‌های \lr{pure} در صورت وجود حذف می‌شوند. اگر چنین نماد‌هایی وجود نداشته باشند جملات واحد یا \lr{unit clause} حذف می‌شوند. در غیر این صورت برای مقدار دهی‌های مختلف یک نماد حالت بندی می‌شود و تابع دوباره صدا زده می‌شود. تابع در ابتدا به صورت زیر فراخوانی می‌شود:
+$$DPLL(clauses = \{S_{1}^{1}, S_{1}^{2}, S_{1}^{3}, S_2, S_3, S_4, S_5, S_6\}, symbols = \{A, B, C, D, E, F\}, model=\{\})$$
+در ادامه تنها محتویات $symbols$ و $model$ را نشان می‌دهیم. در این فراخوانی نماد‌ $D$ خالص است زیرا فقط با همین علامت در جملات دیده می‌شود و تابع به صورت 
+$DPLL(clauses, \{A, B, C, E, F\}, \{D = true\})$
+فراخوانی می‌شود. (دقت کنید جمله $S_2$ دیگر نادیده گرفته می‌شود.) در فراخوانی جدید نماد خالص یا جمله واحد نداریم و در نتیجه دو فراخوانی
+$DPLL(clauses, \{A, C, E, F\}, \{D = true, B = true\})$
+و
+$DPLL(clauses, \{A, C, E, F\}, \{D = true, B = false\})$
+انجام می‌شود. در فراخوانی اول، جملات $S_{1}^{1}$ و $S_4$ نادیده گرفته می‌شوند. همچنین جملات 
+$S_{1}^{2}$
+به $A$ ساده می‌شود؛ جمله 
+$S_3$
+به 
+$\neg C \vee \neg F$
+ساده می‌شود و جملات $S_5$ و $S_6$ به ترتیب به $F$ و $C$ ساده می‌شوند. سپس نماد $A$ خالص خواهد بود چرا که فقط به صورت $A$ و $A \vee \neg E$ ظاهر شده است. پس فراخوانی 
+$$DPLL(clauses, \{C, F\}, \{D = true, B = true, A = true\})$$
+انجام می‌شود. جملات به صورت $C$، $F$ و $\neg C \vee \neg F$ خواهند بود. نماد خالصی وجود ندارد اما جمله $C$ واحد است. پس فراخوانی 
+$DPLL(clauses, \{F\}, \{D = true, B = true, A = true, C = true\})$
+انجام شده و هنگام اجرای آن جمله 
+$\neg C \vee \neg F$
+به $\neg F$ ساده می‌شود. دوباره نماد خالصی وجود ندارد ولی جمله $F$ واحد است و با فراخوانی زیر 
+$$DPLL(clauses, \{\}, \{D = true, B = true, A = true, C = true, F = true\})$$
+جمله 
+$\neg F$ 
+نادرست خواهد بود و $false$ برگردانده می‌شود.
+
+اکنون به فراخوانی
+$DPLL(clauses, \{A, C, E, F\}, \{D = true, B = false\})$
+برمی‌گردیم. در این صورت جملات $S_{1}^{2}$، $S_3$، $S_5$ و $S_6$ نادیده گرفته می‌شوند و جمله $S_4$ به $\neg E$ ساده شده و جمله $S_{1}^{1}$ به $\neg A \vee E$ ساده می‌شود. نماد خالصی وجود ندارد ولی جمله 
+$\neg E$
+واحد است. پس فراخوانی 
+$$DPLL(clauses, \{A\}, \{D = true, B = false, E = false\})$$
+انجام می‌شود. جملات $\neg E$ و $A \vee \neg E$ نادیده گرفته می‌شوند و جمله $\neg A \vee E$ به $\neg A$ ساده می‌شود. نماد $A$ خالص است و فراخوانی 
+$$DPLL(clauses, \{\}, \{D = true, B = false, E = false, A = false\})$$
+انجام می‌شود و همه جملات براساس مقدار دهی $model$ درست هستند پس $true$ برگردانده می‌شود و با انتشار به بالا اعلام می‌شود که جملات داده شده $satisfiable$ هستند.
+\section*{
+سوال چهارم
+}
+الگوریتم 
+$DPLL$
+پس از آنکه جملات را از نظر وجود نماد‌های خالص یا \lr{pure symbols} ساده می‌کند سراغ جملات واحد یا \lr{unit clauses} می‌رود. اگر پایگاه دانش فقط \lr{horn clause} داشته باشد یعنی جملات به فرم 
+$P_1 \wedge \dots \wedge P_n \Longrightarrow Q$
+یا 
+$R$
+که $P_i$، $Q$ و $R$ نماد هستند. در این صورت الگوریتم جملات به فرم $R$ را جملات واحد در نظر می‌گیرد و به آنها مقدار $true$ می‌دهد. سپس سراغ جملات شرطی رفته و با ساده شدن عبارات مربوط به مقدم آنها بخش تالی تنها شده و از طریق جملات واحد 
+$true$
+مقدار دهی می‌شوند. پس $DPLL$ روی \lr{horn clause} مانند \lr{forward chaining} عمل می‌کند. به عنوان مثال روی پایگاه دانش زیر
+$$A, B, A \wedge B \Rightarrow L, A \wedge P \Rightarrow L, B \wedge L \Rightarrow M, L \wedge M \Rightarrow P, P \Rightarrow Q$$
+که برگرفته از شکل 7.16 کتاب است الگوریتم به 
+$A$
+و  
+$B$ 
+مقدار $true$ نسبت می‌دهد. سپس جمله
+$A \wedge B \Rightarrow L \equiv \neg A \vee \neg B \vee L$
+به $L$ ساده می‌شود و در یک فراخوانی دیگر به عنوان حمله واحد شناخته می‌شود و $true$ مقدار دهی می‌شود. سپس به صورت مشابه
+$B \wedge L \Rightarrow M$
+به $M$ ساده شده و $M = true$ و از طریق 
+$L \wedge M \Rightarrow P$
+به $P =true$ و در نهایت از $P \Rightarrow Q$ به $Q = true$ می‌رسیم.
+\section*{
+سوال پنجم
+}
+\begin{enumerate}
+	\item 
+	با جایگذاری اصل ۱ و ۲ و اصل ۷ خواهیم داشت 
+	$0 + 7 \leq 3 + 9$.
+	سپس با جایگذاری ۷ در صور عمومی اصل ۴ خواهیم داشت
+	$7 \leq 7 + 0$.
+	با جایگذاری ۰ و ۷ در صور عمومی اصل ۶ داریم
+	$7 + 0 \leq 0 + 7$.
+	با جایگذاری $7 \leq 7 + 0$ و $7 + 0 \leq 0 + 7$ در اصل ۸ خواهیم داشت
+	$7 \leq 0 + 7$.
+	در نهایت با جایگذاری $7 \leq 0 + 7$ و $0 + 7 \leq 3 + 9$ در اصل ۸ خواهیم داشت 
+	$7 \leq 3 + 9$.
+\end{enumerate}
+\section*{
+سوال ششم
+}
+\begin{enumerate}
+	\item 
+
+رونیکا، درنیکا و آرنیکا را به ترتیب با نمادهای $R$، $D$ و  $A$ نشان می‌دهیم. جملات اتمی زیر را داریم: ($Member$ گزاره‌ای به معنای عضو باشگاه البرز بودن است.)
+$$Member(D), Member(R), Member(A)$$
+از طرفی جملات مرکب زیر را نیز داریم: ($Hiker$ و $Skier$ گزاره‌هایی به معنای کوه نورد و اسکی باز بودن است.)
+$$\forall x \; \; \; Member(x) \Longrightarrow (Hiker(x) \vee Skier(x))$$
+و همچنین: ($Likes$ گزاره‌ای به معنای این است که ورودی اول، ورودی دوم را دوست دارد. در اینجا $Snow$ و $Rain$ مانند $A$ و $D$ ثابت هستند.) 
+\begin{align}
+	\label{rules}
+	&\forall y \; \; \; Skier(y) \Longrightarrow Likes(y, Snow) \\
+	&\forall z \; \; \; Hiker(z) \Longrightarrow \neg Likes(z, Rain) \\
+	&\forall s \; \; \; Likes(A, s) \Longrightarrow \neg Likes(D, s) \\
+	&\forall t \; \; \; \neg Likes(A, t) \Longrightarrow Likes(D, t)
+\end{align}
+د نهایت جمله زیر را داریم:
+$$\neg Likes(A, Rain) \wedge \neg Likes(A, Snow)$$
+
+سوال گفته شده نیز به دنبال مصداق گزاره زیر است:
+$$\exists x \; \; \; Member(x) \wedge Hiker(x) \wedge \neg Skier(x)$$
+که از $\neg Likes(A, Rain) \wedge \neg Likes(A, Snow)$ متوجه می‌شویم 
+$\neg Skier(A)$
+پس خواهیم داشت 
+$Hiker(A)$.
+در نتیجه مصداق صور وجودی آرنیکا است.
+\end{enumerate}
+\end{document}
